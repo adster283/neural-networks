@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 class Perceptron:
 
-    def __init__(self, num_inputs, learning_rate=0.1):
+    def __init__(self, num_inputs, learning_rate=0.03):
         self.weights = np.random.rand(num_inputs + 1)
         self.learning_rate = learning_rate
 
@@ -42,55 +42,69 @@ class Perceptron:
     def train(self, inputs, targets):
         prediction = self.predict(inputs)
         error = self.loss(prediction, targets)
-        self.weights[1:] += self.learning_rate * error * inputs
         self.weights[0]  += self.learning_rate * error
-
+        self.weights[1:] = np.add(self.weights[1:], (self.learning_rate * error * inputs), out=self.weights[1:], casting="unsafe")
 
     def fit(self, X, y, num_epochs):
         for epoch in range(num_epochs):
             for inputs, target in zip(X, y):
                 self.train(inputs, target)
 
+            pred_list = []
+            for row in test_X:
+                pred_list.append(perceptron.predict(row))
+            accuracy = 0
 
+            for i in range(len(test_y)):
+                if pred_list[i] == test_y[i]:
+                    accuracy += 1
+
+            if accuracy / len(test_y) == 1:
+                print("Done training!. Starting the tests...")
+                break
+            else:
+                pass
+                print("Current accuracy: ", epoch,  accuracy / len(test_y))
+                
 
 if __name__ == "__main__":
 
 
     # Reading in the data from the file
     file = "algorithms/Perceptron/ionosphere.data"
-    data = pd.read_csv(file, sep=' ')
+    df = pd.read_csv(file, sep=' ')
 
-    # Seperate features from class labels
-    numpy_array = data.iloc[:, :-1].to_numpy()
-    classes = data['class'].to_numpy()
-    classes = np.where(classes == 'g', 1, 0)
+    # First normalise the data before we split it
+    for column in df.columns[:-1]:
+        df[column] -= df[column].mean()
 
-    print(len(numpy_array))
-    print(len(classes))
+    # Split the data into training and testing sets
+    train = df.sample(frac=0.8)
+    test = df.drop(train.index)
+    train = train.to_numpy()
+    test = test.to_numpy()
+
+    # Grab the class labels
+    train_X, train_y = train[:, :-1], train[:, -1]
+    test_X, test_y = test[:, :-1], test[:, -1]
+    train_y = np.where(train_y == 'g', 1, 0)
+    test_y = np.where(test_y == 'g', 1, 0)
+
 
     np.random.seed(23)
 
-    perceptron = Perceptron(len(numpy_array[1]))
+    perceptron = Perceptron(len(train_X[1]))
 
-    perceptron.fit(numpy_array, classes, num_epochs=7)
+    perceptron.fit(train_X, train_y, num_epochs=100)
 
     pred_list = []
-    for row in numpy_array:
+    for row in test_X:
         pred_list.append(perceptron.predict(row))
 
-
-    print(pred_list)
-
     accuracy = 0
-    for row in classes:
-        if pred_list[row] == classes[row]:
+    for i in range(len(test_y)):
+        if pred_list[i] == test_y[i]:
             accuracy += 1
-    print("accuracy: ", accuracy / len(classes))
+    print("Final accuracy: ", accuracy / len(test_y))
 
-
-    # Plot the dataset
-    plt.scatter(numpy_array[:, 0], numpy_array[:, 1], c=pred_list)
-    plt.xlabel('Feature 1')
-    plt.ylabel('Feature 2')
-    plt.show()
 
