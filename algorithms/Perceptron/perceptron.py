@@ -1,3 +1,4 @@
+import sys
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -46,7 +47,15 @@ class Perceptron:
         self.weights[1:] = np.add(self.weights[1:], (self.learning_rate * error * inputs), out=self.weights[1:], casting="unsafe")
 
     def fit(self, X, y, num_epochs):
-        for epoch in range(num_epochs):
+
+        
+        # Variable to count the epochs since we hit a highest accuracy
+        epochs_no_improvement = 0
+        highest_accruacry = 0
+        epoch_count = 0
+
+        #for epoch in range(num_epochs):
+        while True:
             for inputs, target in zip(X, y):
                 self.train(inputs, target)
 
@@ -59,20 +68,47 @@ class Perceptron:
                 if pred_list[i] == test_y[i]:
                     accuracy += 1
 
-            if accuracy / len(test_y) == 1:
-                print("Done training!. Starting the tests...")
+            num_accuracy = accuracy / len(test_y)
+
+            
+
+            if num_accuracy == 1:
+                print("Reached 100% accuracy, stopping training")
                 break
             else:
                 pass
-                print("Current accuracy: ", epoch,  accuracy / len(test_y))
+
+                print("Current accuracy: ", num_epochs,  num_accuracy)
+
+                if num_accuracy > highest_accruacry:
+                    highest_accruacry = num_accuracy
+                    epochs_no_improvement = 0
+                elif epochs_no_improvement >= 21:
+                    print("No improvement for more than 21 epochs. Ending the training...")
+                    if num_epochs >= 100:
+                        break
+                    else:
+                        epochs_no_improvement += 1
+                        epoch_count += 1
+                else:
+                    epochs_no_improvement += 1
+                    epoch_count += 1
                 
 
 if __name__ == "__main__":
 
 
+    # Get the file to load from sys args
+    if len(sys.argv) != 2:
+        print("Please path to the data file...")
+
     # Reading in the data from the file
-    file = "algorithms/Perceptron/ionosphere.data"
-    df = pd.read_csv(file, sep=' ')
+    try:
+        #file = "algorithms/Perceptron/ionosphere.data"
+        file = sys.argv[1]
+        df = pd.read_csv(file, sep=' ')
+    except:
+        print("Unable to load the data file. Please ensure you are passing in the absolute file path...")
 
     # First normalise the data before we split it
     for column in df.columns[:-1]:
@@ -90,7 +126,6 @@ if __name__ == "__main__":
     train_y = np.where(train_y == 'g', 1, 0)
     test_y = np.where(test_y == 'g', 1, 0)
 
-
     np.random.seed(23)
 
     perceptron = Perceptron(len(train_X[1]))
@@ -106,5 +141,6 @@ if __name__ == "__main__":
         if pred_list[i] == test_y[i]:
             accuracy += 1
     print("Final accuracy: ", accuracy / len(test_y))
+    print("The weights used for final test were:", perceptron.weights)
 
 
