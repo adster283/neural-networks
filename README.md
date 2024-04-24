@@ -1,4 +1,9 @@
-# Running the single layer perceptron script
+# Single layer perceptron
+
+I based the code on a tutorial from GeeksForGeeks with some changes to better fit my needs.
+https://www.geeksforgeeks.org/what-is-perceptron-the-simplest-artificial-neural-network/
+
+## Running the single layer perceptron script
 
 To run the script you can use the following command:
 
