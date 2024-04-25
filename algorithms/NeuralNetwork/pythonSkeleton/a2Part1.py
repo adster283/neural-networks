@@ -15,15 +15,16 @@ def encode_labels(labels):
     integer_encoded = integer_encoded.reshape(len(integer_encoded), 1)
 
     # encode 1 as [1, 0, 0], 2 as [0, 1, 0], and 3 as [0, 0, 1] (to fit with our network outputs!)
-    onehot_encoder = OneHotEncoder(sparse=False)
+    onehot_encoder = OneHotEncoder(sparse_output=False)
     onehot_encoded = onehot_encoder.fit_transform(integer_encoded)
 
     return label_encoder, integer_encoded, onehot_encoder, onehot_encoded
 
 
 if __name__ == '__main__':
-    data = pd.read_csv('penguins307-train.csv')
+    data = pd.read_csv('/Users/adamhindry/neural-networks/algorithms/NeuralNetwork/pythonSkeleton/penguins307-train.csv')
     # the class label is last!
+    print("Example of data row in df: ", data.head(5))
     labels = data.iloc[:, -1]
     # seperate the data from the labels
     instances = data.iloc[:, :-1]
@@ -61,6 +62,7 @@ if __name__ == '__main__':
     # TODO: Perform a single backpropagation pass using the first instance only. (In other words, train with 1
     #  instance for 1 epoch!). Hint: you will need to first get the weights from a forward pass.
 
+
     print('Weights after performing BP for first instance only:')
     print('Hidden layer weights:\n', nn.hidden_layer_weights)
     print('Output layer weights:\n', nn.output_layer_weights)
@@ -70,7 +72,7 @@ if __name__ == '__main__':
     print('Hidden layer weights:\n', nn.hidden_layer_weights)
     print('Output layer weights:\n', nn.output_layer_weights)
 
-    pd_data_ts = pd.read_csv('penguins307-test.csv')
+    pd_data_ts = pd.read_csv('/Users/adamhindry/neural-networks/algorithms/NeuralNetwork/penguins307-test.csv')
     test_labels = pd_data_ts.iloc[:, -1]
     test_instances = pd_data_ts.iloc[:, :-1]
     #scale the test according to our training data.

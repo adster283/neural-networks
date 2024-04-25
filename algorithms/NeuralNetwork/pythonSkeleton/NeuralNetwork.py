@@ -15,7 +15,7 @@ class Neural_Network:
 
     # Calculate neuron activation for an input
     def sigmoid(self, input):
-        output = np.NaN  # TODO!
+        output = 1.0 / (1.0 + np.exp(-input)) #np.NaN  # TODO!
         return output
 
     # Feed forward pass input to a network output
@@ -24,14 +24,19 @@ class Neural_Network:
         for i in range(self.num_hidden):
             # TODO! Calculate the weighted sum, and then compute the final output.
             weighted_sum = 0.
-            output = 0.
+            for j in range(len(inputs)):
+                weighted_sum += inputs[j] * self.hidden_layer_weights[j][i]
+            output = self.sigmoid(weighted_sum)
             hidden_layer_outputs.append(output)
 
         output_layer_outputs = []
         for i in range(self.num_outputs):
             # TODO! Calculate the weighted sum, and then compute the final output.
             weighted_sum = 0.
-            output = 0.
+            for i in range(len(hidden_layer_outputs)):
+                for j in range(len(self.output_layer_weights)):
+                    weighted_sum += hidden_layer_outputs[i] * self.output_layer_weights[i][j]
+            output = self.sigmoid(weighted_sum)
             output_layer_outputs.append(output)
 
         return hidden_layer_outputs, output_layer_outputs
@@ -90,6 +95,21 @@ class Neural_Network:
         for instance in instances:
             hidden_layer_outputs, output_layer_outputs = self.forward_pass(instance)
             #print(output_layer_outputs)
-            predicted_class = None  # TODO! Should be 0, 1, or 2.
+            #predicted_class = None  # TODO! Should be 0, 1, or 2.
+                # encode 1 as [1, 0, 0], 2 as [0, 1, 0], and 3 as [0, 0, 1] (to fit with our network outputs!)
+
+            rounded_outputs = np.round(output_layer_outputs)
+            #if rounded_outputs == [1, 0, 0]:
+            if np.array_equal(rounded_outputs, [1, 0, 0]):
+                predicted_class = 1
+            #elif rounded_outputs == [0, 1, 0]:
+            elif np.array_equal(rounded_outputs, [0, 1, 0]):
+                predicted_class = 2
+            elif np.array_equal(rounded_outputs, [0, 0, 1]):
+            #elif rounded_outputs == [0, 0, 1]:
+                predicted_class = 3
+            else:
+                print("Model unable to make a prediction...")
+                predicted_class = None
             predictions.append(predicted_class)
         return predictions
