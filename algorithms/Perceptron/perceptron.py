@@ -47,7 +47,6 @@ class Perceptron:
         self.weights[1:] = np.add(self.weights[1:], (self.learning_rate * error * inputs), out=self.weights[1:], casting="unsafe")
 
     def fit(self, X, y, num_epochs):
-
         
         # Variable to count the epochs since we hit a highest accuracy
         epochs_no_improvement = 0
@@ -140,7 +139,7 @@ if __name__ == "__main__":
     for i in range(len(test_y)):
         if pred_list[i] == test_y[i]:
             accuracy += 1
-    print("Final accuracy: ", accuracy / len(test_y))
+    print("Final accuracy: ", accuracy / len(test_y) * 100,  "%")
     print("The weights used for final test were:", perceptron.weights)
 
 

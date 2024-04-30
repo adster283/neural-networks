@@ -3,6 +3,7 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import MinMaxScaler
+import os
 
 from NeuralNetwork import Neural_Network
 
@@ -22,7 +23,12 @@ def encode_labels(labels):
 
 
 if __name__ == '__main__':
-    data = pd.read_csv('/Users/adamhindry/neural-networks/algorithms/NeuralNetwork/pythonSkeleton/penguins307-train.csv')
+    # Get the current dir path
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    # Construct a path to the training data file
+    train_csv = os.path.join(current_dir, 'penguins307-train.csv')
+    # Load in the training data file
+    data = pd.read_csv(train_csv)
     # the class label is last!
     print("Example of data row in df: ", data.head(5))
     labels = data.iloc[:, -1]
@@ -59,7 +65,7 @@ if __name__ == '__main__':
         instance1_predicted_label = label_encoder.inverse_transform(instance1_prediction)
     print('Predicted label for the first instance is: {}\n'.format(instance1_predicted_label))
 
-    # TODO: Perform a single backpropagation pass using the first instance only. (In other words, train with 1
+    # Perform a single backpropagation pass using the first instance only. (In other words, train with 1
     #  instance for 1 epoch!). Hint: you will need to first get the weights from a forward pass.
     nn.train([instances[0]], integer_encoded, 1)
 
@@ -68,16 +74,26 @@ if __name__ == '__main__':
     print('Hidden layer weights:\n', nn.hidden_layer_weights)
     print('Output layer weights:\n', nn.output_layer_weights)
 
-    # TODO: Train for 100 epochs, on all instances.
+    # Train for 100 epochs, on all instances.
     nn.train(instances, integer_encoded, 100)
     print('\nAfter training:')
     print('Hidden layer weights:\n', nn.hidden_layer_weights)
     print('Output layer weights:\n', nn.output_layer_weights)
 
-    pd_data_ts = pd.read_csv('/Users/adamhindry/neural-networks/algorithms/NeuralNetwork/penguins307-test.csv')
+    # Run the test data set to see accuracy
+    # Construct path to the test data file
+    test_csv = os.path.join(current_dir, 'penguins307-test.csv')
+    pd_data_ts = pd.read_csv(test_csv)
     test_labels = pd_data_ts.iloc[:, -1]
     test_instances = pd_data_ts.iloc[:, :-1]
     #scale the test according to our training data.
     test_instances = scaler.transform(test_instances)
 
-    # TODO: Compute and print the test accuracy
+    print("Testing...")
+    label_encoder, integer_encoded, onehot_encoder, onehot_encoded = encode_labels(test_labels)
+    predictions = nn.predict(test_instances)
+    acc = 0
+    for i in range(len(predictions)):
+        if predictions[i] == integer_encoded[i]:
+            acc += 1
+    print('Test accuracy = ', acc / len(predictions) * 100, "%")
