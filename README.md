@@ -1,3 +1,13 @@
+# Setup development environment to run the python scripts
+
+Open a terminal in the the top directory of this project and start a venv with the following commands:
+
+`source myvenv/bin/activate`
+
+`pip install -r requirements.txt`
+
+You can now follow the instructions for running the scripts.
+
 # Single layer perceptron
 
 I based the code on a tutorial from GeeksForGeeks with some changes to better fit my needs.
