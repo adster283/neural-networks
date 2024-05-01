@@ -2,7 +2,7 @@
 
 Open a terminal in the the top directory of this project and start a venv with the following commands:
 
-`python -m venv myenv`
+`python3 -m venv myenv`
 
 `source myvenv/bin/activate`
 
